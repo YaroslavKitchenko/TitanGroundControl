@@ -3187,6 +3187,22 @@ void Vehicle::sendExternalPositionEstimate(const QGeoCoordinate& coordinate)
     );
 }
 
+void Vehicle::sendExternalWindEstimate(float speed, float direction, float speedAccuracy, float directionAccuracy)
+{
+    sendMavCommand(
+        _defaultComponentId,
+        MAV_CMD_EXTERNAL_WIND_ESTIMATE,
+        true,                               // showError
+        speed,                              // param1: horizontal wind speed (m/s)
+        speedAccuracy,                      // param2: 1-sigma speed accuracy (m/s, NaN if unknown)
+        direction,                          // param3: azimuth (deg) from where wind is blowing
+        directionAccuracy,                  // param4: 1-sigma direction accuracy (deg, NaN if unknown)
+        0.0f,                               // param5: empty
+        0.0f,                               // param6: empty
+        0.0f                                // param7: empty
+    );
+}
+
 void Vehicle::pairRX(int rxType, int rxSubType)
 {
     sendMavCommand(_defaultComponentId,

@@ -39,6 +39,8 @@ qt_add_qml_module(FlyViewModule
         FlyViewPreFlightChecklistPopup.qml
         FlyViewToolStrip.qml
         FlyViewToolStripActionList.qml
+        FlyViewWindEstimateButton.qml
+        FlyViewWindEstimateDropPanel.qml
 
         FlyViewTopRightColumnLayout.qml
         FlyViewTopRightPanel.qml
@@ -89,6 +91,7 @@ qt_add_resources(FlyViewModule flyview_resources
         "${CMAKE_SOURCE_DIR}/resources/land.svg"
         "${CMAKE_SOURCE_DIR}/resources/NoVideoBackground.jpg"
         "${CMAKE_SOURCE_DIR}/resources/pause-mission.svg"
+        "${CMAKE_SOURCE_DIR}/resources/wind-rose.svg"
 )
 
 qt_add_resources(FlyViewModule flyview_qmlimages

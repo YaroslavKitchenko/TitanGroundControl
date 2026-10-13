@@ -372,6 +372,7 @@ public:
     Q_INVOKABLE void sendPlan(QString planFile);
     Q_INVOKABLE void setEstimatorOrigin(const QGeoCoordinate& centerCoord);
     Q_INVOKABLE void sendExternalPositionEstimate(const QGeoCoordinate& coordinate);
+    Q_INVOKABLE void sendExternalWindEstimate(float speed, float direction, float speedAccuracy = qQNaN(), float directionAccuracy = qQNaN());
 
     /// Used to check if running current version is equal or higher than the one being compared.
     //  returns 1 if current > compare, 0 if current == compare, -1 if current < compare

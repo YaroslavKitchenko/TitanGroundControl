@@ -18,6 +18,7 @@ ToolStripActionList {
         GuidedActionPause { },
         FlyViewAdditionalActionsButton { },
         FlyViewGripperButton { },
-        FlyViewAuxFunctionButton { }
+        FlyViewAuxFunctionButton { },
+        FlyViewWindEstimateButton { }
     ]
 }
