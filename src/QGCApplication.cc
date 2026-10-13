@@ -347,7 +347,10 @@ void QGCApplication::_initForNormalAppBoot()
     MAVLinkProtocol::instance()->init();
     MultiVehicleManager::instance()->init();
     _qmlAppEngine = QGCCorePlugin::instance()->createQmlApplicationEngine(this);
-    QObject::connect(_qmlAppEngine, &QQmlApplicationEngine::objectCreationFailed, this, QCoreApplication::quit, Qt::QueuedConnection);
+    QObject::connect(_qmlAppEngine, &QQmlApplicationEngine::objectCreationFailed, this, [this](const QUrl &url) {
+        qCCritical(QGCApplicationLog) << "QML objectCreationFailed for:" << url;
+        QCoreApplication::quit();
+    }, Qt::QueuedConnection);
 
     // Must register before createRootWindow — root QML references QGCColoredImage which resolves image://coloredsvg/... at load time.
     _qmlAppEngine->addImageProvider(_qgcImageProviderId, new QGCImageProvider());

@@ -6,8 +6,6 @@ import QtPositioning
 
 import QGroundControl
 import QGroundControl.Controls
-import QGroundControl.ScreenTools
-import QGroundControl.Palette
 
 /// Marker for displaying alternate vehicle positions (GPS 1, GPS 2, AHRS2) on the map
 MapQuickItem {
