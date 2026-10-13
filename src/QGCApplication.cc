@@ -347,7 +347,7 @@ void QGCApplication::_initForNormalAppBoot()
     MAVLinkProtocol::instance()->init();
     MultiVehicleManager::instance()->init();
     _qmlAppEngine = QGCCorePlugin::instance()->createQmlApplicationEngine(this);
-    QObject::connect(_qmlAppEngine, &QQmlApplicationEngine::objectCreationFailed, this, [this](const QUrl &url) {
+    QObject::connect(_qmlAppEngine, &QQmlApplicationEngine::objectCreationFailed, this, [](const QUrl &url) {
         qCCritical(QGCApplicationLog) << "QML objectCreationFailed for:" << url;
         QCoreApplication::quit();
     }, Qt::QueuedConnection);
