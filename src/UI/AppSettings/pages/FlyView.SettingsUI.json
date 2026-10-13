@@ -40,6 +40,9 @@
                 },
                 {
                     "setting": "flyViewSettings.enableAutomaticMissionPopups"
+                },
+                {
+                    "setting": "flyViewSettings.showOtherPositions"
                 }
             ]
         },

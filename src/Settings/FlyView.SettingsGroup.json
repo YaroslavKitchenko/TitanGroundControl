@@ -152,6 +152,14 @@
             "default": true,
             "label": "Enable automatic mission start/resume popups",
             "keywords": "mission popup"
+        },
+        {
+            "name": "showOtherPositions",
+            "shortDesc": "Display secondary position sources on the map (GPS1, GPS2, AHRS2).",
+            "type": "bool",
+            "default": false,
+            "label": "Show other positions on map (GPS1, GPS2, AHRS2)",
+            "keywords": "gps,ahrs,other positions,setup other positions"
         }
     ]
 }

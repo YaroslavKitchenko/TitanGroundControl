@@ -143,6 +143,15 @@ public:
     Q_PROPERTY(int                  id                          READ id                                                             CONSTANT)
     Q_PROPERTY(AutoPilotPlugin*     autopilotPlugin             MEMBER _autopilotPlugin                                             CONSTANT)
     Q_PROPERTY(QGeoCoordinate       coordinate                  READ coordinate                                                     NOTIFY coordinateChanged)
+    Q_PROPERTY(QGeoCoordinate       gps1Coordinate              READ gps1Coordinate                                                 NOTIFY gps1CoordinateChanged)
+    Q_PROPERTY(double               gps1Heading                 READ gps1Heading                                                    NOTIFY gps1CoordinateChanged)
+    Q_PROPERTY(bool                 gps1Valid                   READ gps1Valid                                                      NOTIFY gps1CoordinateChanged)
+    Q_PROPERTY(QGeoCoordinate       gps2Coordinate              READ gps2Coordinate                                                 NOTIFY gps2CoordinateChanged)
+    Q_PROPERTY(double               gps2Heading                 READ gps2Heading                                                    NOTIFY gps2CoordinateChanged)
+    Q_PROPERTY(bool                 gps2Valid                   READ gps2Valid                                                      NOTIFY gps2CoordinateChanged)
+    Q_PROPERTY(QGeoCoordinate       ahrs2Coordinate             READ ahrs2Coordinate                                                NOTIFY ahrs2CoordinateChanged)
+    Q_PROPERTY(double               ahrs2Heading                READ ahrs2Heading                                                   NOTIFY ahrs2CoordinateChanged)
+    Q_PROPERTY(bool                 ahrs2Valid                  READ ahrs2Valid                                                     NOTIFY ahrs2CoordinateChanged)
     Q_PROPERTY(QGeoCoordinate       homePosition                READ homePosition                                                   NOTIFY homePositionChanged)
     Q_PROPERTY(QGeoCoordinate       armedPosition               READ armedPosition                                                  NOTIFY armedPositionChanged)
     Q_PROPERTY(bool                 armed                       READ armed                      WRITE setArmedShowError             NOTIFY armedChanged)
@@ -451,6 +460,18 @@ public:
 
     QGeoCoordinate homePosition();
 
+    QGeoCoordinate gps1Coordinate() const { return _gps1Coordinate; }
+    double gps1Heading() const { return _gps1Heading; }
+    bool gps1Valid() const { return _gps1Valid; }
+
+    QGeoCoordinate gps2Coordinate() const { return _gps2Coordinate; }
+    double gps2Heading() const { return _gps2Heading; }
+    bool gps2Valid() const { return _gps2Valid; }
+
+    QGeoCoordinate ahrs2Coordinate() const { return _ahrs2Coordinate; }
+    double ahrs2Heading() const { return _ahrs2Heading; }
+    bool ahrs2Valid() const { return _ahrs2Valid; }
+
     bool armed              () const{ return _armed; }
     void setArmed           (bool armed, bool showError);
     void setArmedShowError  (bool armed) { setArmed(armed, true); }
@@ -746,6 +767,9 @@ public slots:
 
 signals:
     void coordinateChanged              (QGeoCoordinate coordinate);
+    void gps1CoordinateChanged          ();
+    void gps2CoordinateChanged          ();
+    void ahrs2CoordinateChanged         ();
     void guidedModeGotoLocationSent     (QGeoCoordinate gotoCoord);
     void mavlinkMessageReceived         (const mavlink_message_t& message);
     void homePositionChanged            (const QGeoCoordinate& homePosition);
@@ -867,6 +891,7 @@ private:
     void _handleExtendedSysState        (mavlink_message_t& message);
     void _handleCommandAck              (mavlink_message_t& message);
     void _handleGpsRawInt               (mavlink_message_t& message);
+    void _handleGps2Raw                 (mavlink_message_t& message);
     void _handleGlobalPositionInt       (mavlink_message_t& message);
     void _handleHighLatency             (mavlink_message_t& message);
     void _handleHighLatency2            (mavlink_message_t& message);
@@ -878,6 +903,7 @@ private:
     // ArduPilot dialect messages
 #if !defined(QGC_NO_ARDUPILOT_DIALECT)
     void _handleCameraFeedback          (const mavlink_message_t& message);
+    void _handleAhrs2                   (mavlink_message_t& message);
 #endif
     void _handleCameraImageCaptured     (const mavlink_message_t& message);
     void _handleCommandLong             (const mavlink_message_t& message);
@@ -933,6 +959,18 @@ private:
     QGeoCoordinate  _homePosition;
     QGeoCoordinate  _armedPosition;
     QGeoCoordinate  _lastGotoCoordinate;
+
+    QGeoCoordinate  _gps1Coordinate;
+    double          _gps1Heading = 0.0;
+    bool            _gps1Valid = false;
+
+    QGeoCoordinate  _gps2Coordinate;
+    double          _gps2Heading = 0.0;
+    bool            _gps2Valid = false;
+
+    QGeoCoordinate  _ahrs2Coordinate;
+    double          _ahrs2Heading = 0.0;
+    bool            _ahrs2Valid = false;
 
     qreal           _initialGCSPressure = 0.;
     qreal           _initialGCSTemperature = 0.;

@@ -49,6 +49,7 @@
 #include "PositionManager.h"
 #include "AppMessages.h"
 #include "QGCMath.h"
+#include <QtCore/QtMath>
 #include "QGCApplication.h"
 #include "QGCCameraManager.h"
 #include "QGCCorePlugin.h"
@@ -659,6 +660,9 @@ void Vehicle::_mavlinkMessageReceived(LinkInterface* link, mavlink_message_t mes
     case MAVLINK_MSG_ID_GPS_RAW_INT:
         _handleGpsRawInt(message);
         break;
+    case MAVLINK_MSG_ID_GPS2_RAW:
+        _handleGps2Raw(message);
+        break;
     case MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
         _handleGlobalPositionInt(message);
         break;
@@ -727,6 +731,9 @@ void Vehicle::_mavlinkMessageReceived(LinkInterface* link, mavlink_message_t mes
     case MAVLINK_MSG_ID_CAMERA_FEEDBACK:
         _handleCameraFeedback(message);
         break;
+    case MAVLINK_MSG_ID_AHRS2:
+        _handleAhrs2(message);
+        break;
 #endif
     case MAVLINK_MSG_ID_LOG_ENTRY:
     {
@@ -774,6 +781,27 @@ void Vehicle::_handleCameraFeedback(const mavlink_message_t& message)
     QGeoCoordinate imageCoordinate((double)feedback.lat / qPow(10.0, 7.0), (double)feedback.lng / qPow(10.0, 7.0), feedback.alt_msl);
     qCDebug(VehicleLog) << "_handleCameraFeedback coord:index" << imageCoordinate << feedback.img_idx;
     _cameraTriggerPoints->append(new QGCQGeoCoordinate(imageCoordinate, this));
+}
+
+void Vehicle::_handleAhrs2(mavlink_message_t& message)
+{
+    if (message.compid != _defaultComponentId) {
+        return;
+    }
+
+    mavlink_ahrs2_t ahrs2;
+    mavlink_msg_ahrs2_decode(&message, &ahrs2);
+
+    if (ahrs2.lat != 0 && ahrs2.lng != 0) {
+        _ahrs2Coordinate = QGeoCoordinate(ahrs2.lat / (double)1E7, ahrs2.lng / (double)1E7, ahrs2.altitude);
+        double heading = qRadiansToDegrees(static_cast<double>(ahrs2.yaw));
+        if (heading < 0.0) {
+            heading += 360.0;
+        }
+        _ahrs2Heading = heading;
+        _ahrs2Valid = true;
+        emit ahrs2CoordinateChanged();
+    }
 }
 #endif
 
@@ -850,6 +878,42 @@ void Vehicle::_handleGpsRawInt(mavlink_message_t& message)
             }
         }
     }
+
+    bool valid = (gpsRawInt.fix_type >= GPS_FIX_TYPE_2D_FIX && gpsRawInt.lat != 0 && gpsRawInt.lon != 0);
+    _gps1Valid = valid;
+    if (valid) {
+        _gps1Coordinate = QGeoCoordinate(gpsRawInt.lat / (double)1E7, gpsRawInt.lon / (double)1E7, gpsRawInt.alt / 1000.0);
+        if (gpsRawInt.yaw != 0 && gpsRawInt.yaw != UINT16_MAX) {
+            _gps1Heading = gpsRawInt.yaw / 100.0;
+        } else if (gpsRawInt.cog != UINT16_MAX) {
+            _gps1Heading = gpsRawInt.cog / 100.0;
+        }
+    }
+    emit gps1CoordinateChanged();
+}
+
+void Vehicle::_handleGps2Raw(mavlink_message_t& message)
+{
+    if (message.compid != _defaultComponentId) {
+        return;
+    }
+
+    mavlink_gps2_raw_t gps2Raw;
+    mavlink_msg_gps2_raw_decode(&message, &gps2Raw);
+
+    _gps2RawMessageAvailable = true;
+
+    bool valid = (gps2Raw.fix_type >= GPS_FIX_TYPE_2D_FIX && gps2Raw.lat != 0 && gps2Raw.lon != 0);
+    _gps2Valid = valid;
+    if (valid) {
+        _gps2Coordinate = QGeoCoordinate(gps2Raw.lat / (double)1E7, gps2Raw.lon / (double)1E7, gps2Raw.alt / 1000.0);
+        if (gps2Raw.yaw != 0 && gps2Raw.yaw != UINT16_MAX) {
+            _gps2Heading = gps2Raw.yaw / 100.0;
+        } else if (gps2Raw.cog != UINT16_MAX) {
+            _gps2Heading = gps2Raw.cog / 100.0;
+        }
+    }
+    emit gps2CoordinateChanged();
 }
 
 // TODO: VehicleFactGroup

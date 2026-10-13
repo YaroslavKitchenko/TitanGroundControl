@@ -211,6 +211,7 @@ FlightMap {
     }
 
     QGCMapPalette { id: mapPal; lightColors: isSatelliteMap }
+    QGCPalette { id: qgcPal }
 
     Connections {
         target:                 _missionController
@@ -279,6 +280,34 @@ FlightMap {
             map:            _root
             z:              QGroundControl.zOrderVehicles
         }
+    }
+
+    // Alternate positions (GPS 1, GPS 2, AHRS2) for active vehicle
+    AlternatePositionMapItem {
+        map:            _root
+        coordinate:     _activeVehicle ? _activeVehicle.gps1Coordinate : QtPositioning.coordinate()
+        heading:        _activeVehicle ? _activeVehicle.gps1Heading : Number.NaN
+        labelText:      qsTr("GPS 1")
+        markerColor:    qgcPal.colorBlue
+        visible:        !pipMode && _flyViewSettings.showOtherPositions.value && _activeVehicle && _activeVehicle.gps1Valid && coordinate.isValid
+    }
+
+    AlternatePositionMapItem {
+        map:            _root
+        coordinate:     _activeVehicle ? _activeVehicle.gps2Coordinate : QtPositioning.coordinate()
+        heading:        _activeVehicle ? _activeVehicle.gps2Heading : Number.NaN
+        labelText:      qsTr("GPS 2")
+        markerColor:    qgcPal.brandingPurple
+        visible:        !pipMode && _flyViewSettings.showOtherPositions.value && _activeVehicle && _activeVehicle.gps2Valid && coordinate.isValid
+    }
+
+    AlternatePositionMapItem {
+        map:            _root
+        coordinate:     _activeVehicle ? _activeVehicle.ahrs2Coordinate : QtPositioning.coordinate()
+        heading:        _activeVehicle ? _activeVehicle.ahrs2Heading : Number.NaN
+        labelText:      qsTr("AHR2")
+        markerColor:    qgcPal.colorOrange
+        visible:        !pipMode && _flyViewSettings.showOtherPositions.value && _activeVehicle && _activeVehicle.ahrs2Valid && coordinate.isValid
     }
     // Add ADSB vehicles to the map
     MapItemView {
@@ -873,6 +902,16 @@ FlightMap {
                         }
                     }
 
+                    QGCButton {
+                        Layout.fillWidth:   true
+                        text:               _flyViewSettings.showOtherPositions.value ? qsTr("Hide other positions") : qsTr("Setup other positions")
+                        visible:            _activeVehicle !== null
+                        onClicked: {
+                            mapClickDropPanel.close()
+                            _flyViewSettings.showOtherPositions.rawValue = !_flyViewSettings.showOtherPositions.rawValue
+                        }
+                    }
+
                     ColumnLayout {
                         spacing: 0
                         QGCLabel { text: qsTr("Lat: %1").arg(mapClickCoord.latitude.toFixed(6)) }
@@ -888,7 +927,7 @@ FlightMap {
             (globals.guidedControllerFlyView.showGotoLocation || globals.guidedControllerFlyView.showOrbit ||
              globals.guidedControllerFlyView.showROI || globals.guidedControllerFlyView.showSetHome ||
              globals.guidedControllerFlyView.showSetEstimatorOrigin ||
-             (_activeVehicle && _activeVehicle.aiChatController))) {
+             (_activeVehicle !== null))) {
 
             position = Qt.point(position.x, position.y)
             var clickCoord = _root.toCoordinate(position, false /* clipToViewPort */)
