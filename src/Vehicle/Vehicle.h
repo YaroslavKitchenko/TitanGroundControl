@@ -362,6 +362,7 @@ public:
 
     Q_INVOKABLE void sendPlan(QString planFile);
     Q_INVOKABLE void setEstimatorOrigin(const QGeoCoordinate& centerCoord);
+    Q_INVOKABLE void sendExternalPositionEstimate(const QGeoCoordinate& coordinate);
 
     /// Used to check if running current version is equal or higher than the one being compared.
     //  returns 1 if current > compare, 0 if current == compare, -1 if current < compare
@@ -741,6 +742,7 @@ public slots:
     void _offlineFirmwareTypeSettingChanged (QVariant varFirmwareType); // Should only be used by MissionControler to set firmware from Plan file
     void _offlineVehicleTypeSettingChanged  (QVariant varVehicleType);  // Should only be used by MissionController to set vehicle type from Plan file
     Q_INVOKABLE void sendGripperAction(GRIPPER_ACTIONS gripperOption);
+    Q_INVOKABLE void sendDoAuxFunction(int auxFunction, int switchPosition);
 
 signals:
     void coordinateChanged              (QGeoCoordinate coordinate);

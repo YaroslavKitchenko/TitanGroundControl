@@ -17,6 +17,7 @@ ToolStripActionList {
         GuidedActionRTL { },
         GuidedActionPause { },
         FlyViewAdditionalActionsButton { },
-        FlyViewGripperButton { }
+        FlyViewGripperButton { },
+        FlyViewAuxFunctionButton { }
     ]
 }

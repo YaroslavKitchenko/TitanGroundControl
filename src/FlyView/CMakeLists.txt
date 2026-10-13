@@ -26,6 +26,8 @@ qt_add_qml_module(FlyViewModule
         FlyViewAdditionalActionsList.qml
         FlyViewAdditionalActionsPanel.qml
         FlyViewAdditionalCustomActionsList.qml
+        FlyViewAuxFunctionButton.qml
+        FlyViewAuxFunctionDropPanel.qml
         FlyViewBottomRightRowLayout.qml
         FlyViewCustomLayer.qml
         FlyViewInsetViewer.qml
@@ -82,6 +84,7 @@ qt_add_resources(FlyViewModule flyview_resources
     PREFIX "/res"
     BASE "${CMAKE_SOURCE_DIR}/resources"
     FILES
+        "${CMAKE_SOURCE_DIR}/resources/AdvancedSliders.svg"
         "${CMAKE_SOURCE_DIR}/resources/Gripper.svg"
         "${CMAKE_SOURCE_DIR}/resources/land.svg"
         "${CMAKE_SOURCE_DIR}/resources/NoVideoBackground.jpg"

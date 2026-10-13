@@ -3068,6 +3068,16 @@ void Vehicle::sendGripperAction(GRIPPER_ACTIONS gripperAction)
             gripperAction);         // Param2: Gripper Action
 }
 
+void Vehicle::sendDoAuxFunction(int auxFunction, int switchPosition)
+{
+    sendMavCommand(
+            _defaultComponentId,
+            MAV_CMD_DO_AUX_FUNCTION,
+            true,                   // Show errors
+            static_cast<float>(auxFunction),
+            static_cast<float>(switchPosition));
+}
+
 void Vehicle::setEstimatorOrigin(const QGeoCoordinate& centerCoord)
 {
     SharedLinkInterfacePtr sharedLink = vehicleLinkManager()->primaryLink().lock();
@@ -3089,6 +3099,28 @@ void Vehicle::setEstimatorOrigin(const QGeoCoordinate& centerCoord)
         static_cast<float>(qQNaN())
     );
     sendMessageOnLinkThreadSafe(sharedLink.get(), msg);
+}
+
+void Vehicle::sendExternalPositionEstimate(const QGeoCoordinate& coordinate)
+{
+    if (!coordinate.isValid()) {
+        qCWarning(VehicleLog) << "sendExternalPositionEstimate: invalid coordinate";
+        return;
+    }
+
+    sendMavCommandInt(
+        defaultComponentId(),
+        MAV_CMD_EXTERNAL_POSITION_ESTIMATE,
+        MAV_FRAME_GLOBAL,
+        true,                               // showError
+        0.0f,                               // param1: transmission_time
+        0.0f,                               // param2: processing_time
+        static_cast<float>(qQNaN()),        // param3: accuracy (one std dev, NaN if not known)
+        0.0f,                               // param4: empty
+        coordinate.latitude(),              // param5: latitude (double, scaled to int32 * 1e7)
+        coordinate.longitude(),             // param6: longitude (double, scaled to int32 * 1e7)
+        static_cast<float>(qQNaN())         // param7: altitude (not used according to MAVLink spec, must be NaN)
+    );
 }
 
 void Vehicle::pairRX(int rxType, int rxSubType)

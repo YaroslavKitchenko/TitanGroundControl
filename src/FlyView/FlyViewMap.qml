@@ -855,6 +855,16 @@ FlightMap {
 
                     QGCButton {
                         Layout.fillWidth:   true
+                        text:               qsTr("Set position")
+                        visible:            _activeVehicle !== null
+                        onClicked: {
+                            mapClickDropPanel.close()
+                            _activeVehicle.sendExternalPositionEstimate(mapClickCoord)
+                        }
+                    }
+
+                    QGCButton {
+                        Layout.fillWidth:   true
                         text:               qsTr("Add POI")
                         visible:            _activeVehicle && _activeVehicle.aiChatController
                         onClicked: {
