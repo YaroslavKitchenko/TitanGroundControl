@@ -1,4 +1,4 @@
-﻿import QtQuick
+import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtCore
@@ -65,10 +65,10 @@ ColumnLayout {
 
     Settings {
         id: auxSettings
-        category: "FlyViewAuxFunctions"
-        property int slot0: 90
-        property int slot1: 65
-        property int slot2: 27
+        category: "FlyViewAuxFunctions_v2"
+        property int slot0: 0
+        property int slot1: 0
+        property int slot2: 0
         property int slot3: 0
         property int slot4: 0
         property int slot5: 0
@@ -104,18 +104,6 @@ ColumnLayout {
         _settingsRevision++
     }
 
-    function resetToDefaults() {
-        auxSettings.slot0 = 90
-        auxSettings.slot1 = 65
-        auxSettings.slot2 = 27
-        auxSettings.slot3 = 0
-        auxSettings.slot4 = 0
-        auxSettings.slot5 = 0
-        auxSettings.slot6 = 0
-        auxSettings.slot7 = 0
-        _settingsRevision++
-    }
-
     function findIndexForValue(val) {
         for (var i = 0; i < auxFunctionList.length; i++) {
             if (auxFunctionList[i].value === val) {
@@ -128,23 +116,11 @@ ColumnLayout {
     QGCPalette { id: qgcPal }
 
     // Header
-    RowLayout {
+    QGCLabel {
+        text: qsTr("Aux Functions")
+        font.pointSize: ScreenTools.mediumFontPointSize
+        font.bold: true
         Layout.fillWidth: true
-        spacing: ScreenTools.defaultFontPixelWidth
-
-        QGCLabel {
-            text: qsTr("Aux Functions")
-            font.pointSize: ScreenTools.mediumFontPointSize
-            font.bold: true
-            Layout.fillWidth: true
-        }
-
-        QGCButton {
-            text: qsTr("Reset")
-            pointSize: ScreenTools.smallFontPointSize
-            heightFactor: 0.3
-            onClicked: resetToDefaults()
-        }
     }
 
     // Status label
@@ -196,16 +172,30 @@ ColumnLayout {
                 ]
 
                 QGCButton {
-                    Layout.preferredWidth: ScreenTools.defaultFontPixelWidth * 4.5
+                    id: switchBtn
+                    Layout.preferredWidth: ScreenTools.defaultFontPixelWidth * 6.0
                     Layout.preferredHeight: ScreenTools.implicitButtonHeight
                     text: modelData.label
                     enabled: _activeVehicle !== null
+                    leftPadding: 0
+                    rightPadding: 0
+                    topPadding: 0
+                    bottomPadding: 0
 
                     property int switchPos: modelData.pos
                     property bool isSelected: _lastSlotPositions[slotIndex] === switchPos
 
                     backgroundColor: isSelected ? qgcPal.colorOrange : qgcPal.button
                     textColor: isSelected ? qgcPal.buttonHighlightText : qgcPal.buttonText
+
+                    contentItem: QGCLabel {
+                        text: switchBtn.text
+                        font.pointSize: ScreenTools.smallFontPointSize
+                        font.bold: switchBtn.isSelected
+                        color: switchBtn.textColor
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
 
                     onClicked: {
                         if (_activeVehicle) {
